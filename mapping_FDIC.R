@@ -27,16 +27,20 @@ complete_df = readRDS("FDIC_geocoded.RDS")
 library(ggmap)
 library(dplyr)
 
-df = complete_df[,c("lon","lat","asset")]
+
+df = complete_df %>%
+    filter(lon, lat, asset, name)
+
 df = df[complete.cases(df),]
 
 options(scipen = 99)
 
 library(leaflet)
 
-leaflet(FDIC_df) %>% addTiles() %>%
+leaflet(data = df) %>% 
+    addTiles() %>%
     addCircles(lng = ~lon, lat = ~lat, weight = 1,
-               radius = ~sqrt(asset) * 30, popup = ~name
+               radius = ~sqrt(asset) * 30, popup = ~paste0(name,"\n",1000*asset)
     )
 
 
