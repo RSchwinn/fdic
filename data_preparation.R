@@ -3,16 +3,15 @@
 # "https://cdr.ffiec.gov/public/" # The data are here
 # "https://www5.fdic.gov/sdi/download_large_list_outside.asp" 
 
-pacman::p_load(RCurl)
-pacman::p_load(stringr)
-pacman::p_load(plyr)
-pacman::p_load(dplyr)
-pacman::p_load(stringr)
-
+library(RCurl)
+library(stringr)
+library(plyr)
+library(dplyr)
+library(lubridate)
 
 # Sets up download addresses
 root_path = "https://www5.fdic.gov/sdi/Resource/AllReps/All_Reports_"
-years = 1992:2017
+years = 1992:2018
 quarterly_dates = c("0331", "0630", "0930", "1231")
 
 # Makes list of all needed (and some not needed, i.e. has extra junk) addresses 
@@ -24,6 +23,7 @@ for(year in years){
 }
 
 # Creates the download folder
+dir.create("SDI_data", showWarnings = F)
 download_folder = "SDI_data/source_files"
 dir.create(download_folder, showWarnings = F)
 
@@ -37,8 +37,9 @@ do_not_download_list = c(c(list.files(path = download_folder)), # existing
 files_to_be_downloaded = files_to_be_downloaded[!(files_to_be_downloaded$file_names %in% do_not_download_list),] # handles comparison
 
 # Performs data downloads
-download.file(url = files_to_be_downloaded$URLs, 
-              destfile = paste0(download_folder,"/", files_to_be_downloaded$file_names))
+for(i in 1:nrow(files_to_be_downloaded)){
+download.file(url = files_to_be_downloaded$URLs[i], 
+              destfile = paste0(download_folder,"/", files_to_be_downloaded$file_names[i]))}
 
 # Performs definitions downloads
 download.file(url = "https://www5.fdic.gov/sdi/SDIAllDefinitions_CSV.zip", 
@@ -192,11 +193,11 @@ for(i in 2:length(SDI_data)){
     combined_df = plyr::rbind.fill(combined_df,df)
 }
 # 
-# f_list = f_list[order(f_list$frequency, decreasing = T),]
-# new_order = colnames(combined_df)[colnames(combined_df) %in% f_list[,1]]
-# combined_df = combined_df[,new_order]
-combined_df = readRDS("combined_FDIC.RDS")
-require(lubridate)
+f_list = f_list[order(f_list$frequency, decreasing = T),]
+new_order = colnames(combined_df)[colnames(combined_df) %in% f_list[,1]]
+combined_df = combined_df[,new_order]
+# combined_df = readRDS("combined_FDIC.RDS")
+
 combined_df$date = dym(paste0(combined_df$day, 
                               combined_df$year,
                               combined_df$month))
