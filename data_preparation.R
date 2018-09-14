@@ -23,8 +23,10 @@ for(year in years){
 }
 
 # Creates the download folder
-dir.create("SDI_data", showWarnings = F)
-download_folder = "SDI_data/source_files"
+dir.create("../data", showWarnings = F)
+dir.create("../data/fdic", showWarnings = F)
+dir.create("../data/fdic/SDI_data", showWarnings = F)
+download_folder = "../data/fdic/SDI_data/source_files"
 dir.create(download_folder, showWarnings = F)
 
 # Creates a list of addresses and names to be downloaded
@@ -56,7 +58,7 @@ source_files$locations = as.character(source_files$locations)
 
 
 # names folder for extractions
-extracted_files_folder = "SDI_data/extracted_files"
+extracted_files_folder = "../data/fdic/SDI_data/extracted_files"
 
 # unzips definitions
 unzip(
@@ -162,10 +164,10 @@ for (j in 1:nrow(source_files)) {
     print(Sys.time() - start_time)
     temp_combined = temp_combined[, order(names(temp_combined))]
     
-    dir.create("SDI_data/RDS_format", showWarnings = F)
+    dir.create("../data/fdic/SDI_data/RDS_format", showWarnings = F)
     saveRDS(temp_combined,
             paste0(
-                "SDI_data/RDS_format/",
+                "../data/fdic/SDI_data/RDS_format/",
                 gsub("\\.zip$", "", source_files$filenames[j]),
                 ".RDS"
             ))
@@ -174,7 +176,7 @@ for (j in 1:nrow(source_files)) {
 
 # combines all files into one ----
 
-RDS_folder = "SDI_data/RDS_format/"
+RDS_folder = "../data/fdic/RDS_format/"
 SDI_data = list.files(path = RDS_folder)
 
 df = readRDS(paste0(RDS_folder,SDI_data[1]))
@@ -196,11 +198,11 @@ for(i in 2:length(SDI_data)){
 f_list = f_list[order(f_list$frequency, decreasing = T),]
 new_order = colnames(combined_df)[colnames(combined_df) %in% f_list[,1]]
 combined_df = combined_df[,new_order]
-# combined_df = readRDS("combined_FDIC.RDS")
+# combined_df = readRDS("../data/fdic/combined_FDIC.RDS")
 
 combined_df$date = dym(paste0(combined_df$day, 
                               combined_df$year,
                               combined_df$month))
-saveRDS(combined_df, "combined_FDIC.RDS")
+saveRDS(combined_df, "../data/fdic/combined_FDIC.RDS")
 Sys.time()-start_time
 # https://gallery.shinyapps.io/CDCPlot/
