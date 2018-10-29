@@ -7,7 +7,7 @@ require(plotly)
 
 # loads the data and measures loading time ----
 # start_time = Sys.time()
-df = readRDS("combined_FDIC.RDS")
+df = readRDS("../data/fdic/combined_FDIC.RDS")
 
 # changes variables to lowercase
 names(df) = tolower(names(df))
@@ -17,7 +17,7 @@ i <- sapply(df, is.factor)
 df[i] <- lapply(df[i], as.character)
 
 # loads definitions file
-defs = read.csv("definitions.csv")
+defs = read.csv("fdic_definitions.csv")
 defs$Variable = tolower(defs$Variable)
 
 # removes duplicate variables
@@ -50,17 +50,17 @@ for(i in 1:nrow(defs)){
     }
 }
 
-# loads Vicky's selected banks
-vws = readxl::read_excel("vws.xlsx")
-names(vws) = tolower(names(vws))
-vws = (vws[!duplicated(vws$variable),])
-vws = vws %>%
-    filter(variable %in% names(df), `show "r"` == "Y")
-selected = vws$variable
+# # loads Vicky's selected banks
+# vws = readxl::read_excel("../data/fdic/vws.xlsx")
+# names(vws) = tolower(names(vws))
+# vws = (vws[!duplicated(vws$variable),])
+# vws = vws %>%
+#     filter(variable %in% names(df), `show "r"` == "Y")
+# selected = vws$variable
+# 
+# defs$vw_selected = defs$Variable %in% selected
 
-defs$vw_selected = defs$Variable %in% selected
-
-write.csv(defs, "better_definitions_table.csv")
+# write.csv(defs, "../data/fdic/better_definitions_table.csv")
 
 
 
