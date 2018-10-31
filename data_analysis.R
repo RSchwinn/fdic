@@ -5,7 +5,7 @@ require(ggthemes)
 require(scales)
 require(plotly)
 
-# loads the data and measures loading time ----
+# Previously Useful for Choosing the Chosen ----
 # start_time = Sys.time()
 df = readRDS("../data/fdic/combined_FDIC.RDS")
 
@@ -32,8 +32,7 @@ defs = defs %>%
 # re-arranges df by alpha
 df = df[,order(names(df))]
 
-# makes alphabetical
-order(defs$Variable)
+# makes definitions alphabetical
 defs = defs[order(defs$Variable),]
 
 # ensures variables are ordered correctly
@@ -43,7 +42,6 @@ defs = cbind(defs,matrix(NA, nrow(defs), 7))
 names(defs)[6:12] = names(summary(df[,1]))
 
 for(i in 1:nrow(defs)){
-
     if(is.numeric(df[,i])){
         it = summary(df[,i])
     defs[i,6:(5+length(it))] = as.numeric(summary(df[,i]))
@@ -99,17 +97,16 @@ for(i in 1:nrow(defs)){
 # random_bank = as.character(df$name[sample(1:19624, 1)])
 
 
-# alternative loading ----
+# Creates Working Dataframe ----
 
 "
 15 Geo
 11 ID
 361 FINANCIALS
 5 TIME
-
 "
 
-df = readRDS("combined_FDIC.RDS")
+df = readRDS("../data/fdic/combined_FDIC.RDS")
 base = df 
 # changes variables to lowercase
 names(df) = tolower(names(df))
@@ -121,15 +118,19 @@ df[i] <- lapply(df[i], as.character)
 # removes any columns with duplicate names
 df = df[,!duplicated(names(df))]
 
+# creates dates from days, months, etc.
+df$date = mdy(paste(df$month,df$day,df$year))
+
+
 # loads the chosen ones and reduces the nubmer of variables
-the_chosen = read.csv("the_chosen_ones.csv", stringsAsFactors = F)
+the_chosen = read.csv("even_better_chosen_list.csv", stringsAsFactors = F)
 
 # df = df[,the_chosen]
 df = df %>%
-    select(the_chosen[,1])
+    select(the_chosen$Variable)
 
 
-
+# changes strings to dates
 for(i in c("estymd", "repdte", "rundate", "insdate", "effdate")){
 df[,i] = mdy(df[,i])
 }
@@ -142,59 +143,14 @@ df = cbind(df[,isf],df[,notf])
 isf <- sapply(df, is.character)
 notf <- !isf
 df = cbind(df[,isf],df[,notf])
-saveRDS(df, "working_df.RDS")
 
 
-# df_2017 = filter(df, year == 2017, month == "06")
-# df_2017 = df_2017[,c("name", "asset", "address", "city", "stalp", "zip")]
-# df_2017$full_address = paste(df_2017$address, df_2017$city, df_2017$stalp, df_2017$zip, sep = ", ")
-# 
-# saveRDS(df_2017, "FDIC_df.RDS")
-
-
-# subsets to most recent data
+# Removes left-over junk
 df = df %>%
-    filter(date == "2017-09-30")
-saveRDS(df, "recent_df.RDS")
-
-# loads manicured data ----
-# df = readRDS("working_df.RDS")
-df = readRDS("recent_df.RDS")
-
-num_only = df[,sapply(df,is.numeric)]
-
-summary(num_only)
-
-
-displayed_var = "asset2"
-
-plot_df = df
-plot_df[is.na(plot_df[,displayed_var]),displayed_var] = 0
-plot_df = plot_df[!(plot_df[,displayed_var] == 0),]
-
-subset <- tidyr::gather(num_only[,1:20])
-it = ggplot(subset, aes(value)) + geom_area() + facet_wrap(~key, scales = 'free')
-it
-
-it = ggplot(plot_df, aes(sample = asset2)) +
-    geom_qq()
-
-ggplotly(it)
-
-
-definitions_table = read.csv("definitions.csv", row.names = NULL)[,-1]
-
-
-p = ggplot(df, aes(x = date, y = depidom))+
-    geom_line(col = "steelblue")+
-    scale_y_continuous(labels = comma)+
-    theme_pander()+
-    labs(title = random_bank,
-         caption = sub_t) 
-
-ggplotly(p)
-    
+    select(-c(day, year, month))
 
 
 
-#
+# SAVES FILE WE WILL USE FOR EVERYTHING
+saveRDS(df, "../data/fdic/working_df.RDS")
+
