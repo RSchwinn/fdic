@@ -4,7 +4,7 @@ library(tidyverse)
 df = readRDS("../data/fdic/working_df.RDS")
 definitions = read_csv("even_better_chosen_list.csv")
 
-# Rich's sample plot
+# Rich's sample plot ----
 df %>%
     select(name, rssdhcr, fed_rssd, asset, date) %>%
     arrange(desc(asset)) %>%
@@ -32,3 +32,8 @@ ggplot(data = df_1, aes(x = dep, y = asset)) +
 # Vicky's Visualization ----
 recent_df = df %>% 
     filter( date == "2018-03-31")
+
+
+ggplot(data = df, 
+       mapping = aes(x=asset))+
+    geom_histogram()
