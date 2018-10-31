@@ -47,3 +47,4 @@ leaflet(data = df) %>%
 
 # ggplot() + coord_map() + geom_point(data=df, aes(x=lon, y=lat, size = asset, alpha = 0.01), color = "steelblue")
 # 
+#
