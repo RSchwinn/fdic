@@ -1,9 +1,12 @@
-require(lubridate)
-require(dplyr)
-require(ggplot2)
-require(ggthemes)
-require(scales)
-require(plotly)
+
+
+library(lubridate)
+library(dplyr)
+library(ggplot2)
+library(ggthemes)
+library(scales)
+library(plotly)
+
 
 # loads the data and measures loading time ----
 # start_time = Sys.time()
