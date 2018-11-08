@@ -155,9 +155,15 @@ for (j in 1:nrow(source_files)) {
     identifiers_count = max(f_list$frequency)
     str(f_list)
     identifiers = dplyr::filter(f_list, frequency == identifiers_count)[, "variable_name"]
-    
     start_time = Sys.time()
+    
+    
+    
     temp_combined = read.csv(paste0(new_folder, "/", new_files[1]))
+    
+    
+    # this combines all the files ----
+    
     for (i in 2:length(new_files)) {
         temp_combined = merge(x = read.csv(paste0(new_folder, "/", new_files[i])),
                               y = temp_combined)
@@ -198,7 +204,11 @@ for(i in 2:length(SDI_data)){
 # 
 f_list = f_list[order(f_list$frequency, decreasing = T),]
 new_order = colnames(combined_df)[colnames(combined_df) %in% f_list[,1]]
-combined_df = combined_df[,new_order]
+
+# Uncomment line below to remove variables that do not appear frequently.
+#########################################
+# combined_df = combined_df[,new_order] #
+#########################################
 # combined_df = readRDS("../data/fdic/combined_FDIC.RDS")
 
 combined_df$date = dym(paste0(combined_df$day, 
@@ -323,7 +333,9 @@ the_chosen = read.csv("even_better_chosen_list.csv", stringsAsFactors = F)
 
 # df = df[,the_chosen]
 df = df %>%
-    select(the_chosen$Variable)
+    select(c(the_chosen$Variable, 
+             "hctmult" # We have added a variable that identifies holding status
+             ))
 
 
 # changes strings to dates
