@@ -330,7 +330,9 @@ the_chosen = read.csv("even_better_chosen_list.csv", stringsAsFactors = F)
 
 # df = df[,the_chosen]
 df = df %>%
-    select(the_chosen$Variable)
+    select(c(the_chosen$Variable, 
+             "hctmult" # We have added a variable that identifies holding status
+             ))
 
 
 # changes strings to dates
