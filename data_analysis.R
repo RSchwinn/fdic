@@ -1,17 +1,4 @@
-<<<<<<< HEAD
-
-
-library(lubridate)
-library(dplyr)
-library(ggplot2)
-library(ggthemes)
-library(scales)
-library(plotly)
-
-=======
 library(tidyverse)
->>>>>>> aebd80e2e8c8f8139d1ee1c17703bc7f15891f28
-
 # Always Start Here (loads the data) ----
 df = readRDS("../data/fdic/working_df.RDS")
 definitions = read_csv("even_better_chosen_list.csv")

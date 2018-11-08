@@ -302,13 +302,6 @@ Sys.time()-start_time
 
 # Creates Working Dataframe ----
 
-"
-15 Geo
-11 ID
-361 FINANCIALS
-5 TIME
-"
-
 df = readRDS("../data/fdic/combined_FDIC.RDS")
 base = df 
 # changes variables to lowercase
