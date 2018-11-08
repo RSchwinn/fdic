@@ -1,6 +1,5 @@
-library(tidyverse)
-
 # Always Start Here (loads the data) ----
+library(tidyverse)
 df = readRDS("../data/fdic/working_df.RDS")
 definitions = read_csv("even_better_chosen_list.csv")
 
@@ -29,7 +28,7 @@ ggplot(data = df_1, aes(x = dep, y = asset)) +
     ggtitle(df_1$name[nrow(df_1)])
     
 
-# Vicky's Visualization ----
+# Vicky's visualization ----
 recent_df = df %>% 
     filter( date == "2018-03-31")
 
