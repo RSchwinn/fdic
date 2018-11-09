@@ -1,4 +1,4 @@
-# data_download ----
+# (1) data_download ----
 # Data references:
 # "https://cdr.ffiec.gov/public/" # The data are here
 # "https://www5.fdic.gov/sdi/download_large_list_outside.asp" 
@@ -49,7 +49,7 @@ download.file(url = "https://www5.fdic.gov/sdi/SDIAllDefinitions_CSV.zip",
               destfile = paste0(download_folder,"/","definitions.zip"))
 
 
-# data_exploration ----
+# creates combined definitions file ----
 # creates dataframe of the file addresses
 source_files = as.data.frame(paste0(download_folder, "/", c(list.files(path = download_folder, "^A.+"))))
 # creates column of names
@@ -89,6 +89,7 @@ for (i in seq_along(list.files(paste0(extracted_files_folder, "/", "definitions"
     
     colnames(a) = a[1, ]
     a = a[-1, ]
+    
     # gsub is a future best friend.
     a$ref_file = gsub(".csv",
                       "",
@@ -103,7 +104,7 @@ definitions_table = definitions_table[order(definitions_table$Variable), ]
 write.csv(definitions_table, "definitions.csv")
 # definitions_table = read.csv("definitions.csv", row.names = F)
 
-# creates_extraction_folders_and_master_variable_list ----
+# creates master variables list and RDSs ----
 
 for (j in 1:nrow(source_files)) {
     ## unzips_files_and_creates_file_contents_summary ----
@@ -181,7 +182,7 @@ for (j in 1:nrow(source_files)) {
     unlink(new_folder, recursive = T)
 }
 
-# combines all files into one ----
+# combines all files into one RDS ----
 
 RDS_folder = "../data/fdic/RDS_format/"
 SDI_data = list.files(path = RDS_folder)
@@ -202,13 +203,11 @@ for(i in 2:length(SDI_data)){
     combined_df = plyr::rbind.fill(combined_df,df)
 }
 # 
-f_list = f_list[order(f_list$frequency, decreasing = T),]
-new_order = colnames(combined_df)[colnames(combined_df) %in% f_list[,1]]
 
 # Uncomment line below to remove variables that do not appear frequently.
-#########################################
+# f_list = f_list[order(f_list$frequency, decreasing = T),]
+# new_order = colnames(combined_df)[colnames(combined_df) %in% f_list[,1]]
 # combined_df = combined_df[,new_order] #
-#########################################
 # combined_df = readRDS("../data/fdic/combined_FDIC.RDS")
 
 combined_df$date = dym(paste0(combined_df$day, 
@@ -310,7 +309,7 @@ Sys.time()-start_time
 # # random_bank = as.character(df$name[sample(1:19624, 1)])
 # 
 
-# Creates Working Dataframe ----
+# creates the working dataframe ----
 
 df = readRDS("../data/fdic/combined_FDIC.RDS")
 base = df 
@@ -334,7 +333,7 @@ the_chosen = read.csv("even_better_chosen_list.csv", stringsAsFactors = F)
 # df = df[,the_chosen]
 df = df %>%
     select(c(the_chosen$Variable, 
-             "hctmult" # We have added a variable that identifies holding status
+             "cb" # We have added a variable that identifies holding status
              ))
 
 
