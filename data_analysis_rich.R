@@ -36,9 +36,9 @@ ggplot(data = df_1,
 # Vicky's visualization ----
 recent_df = df %>% 
     filter( date == "2018-03-31",
-            hctmult == 1
+            cb == 1
             )%>%
-    select(name, rssdhcr, fed_rssd, asset, date)
+    select(name, rssdhcr, dep, fed_rssd, asset, date)
 
 ggplot(data = recent_df, 
        mapping = aes(x=asset))+
